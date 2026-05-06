@@ -208,8 +208,7 @@ export function DataTable({ rows, headers, fixedCols=[], grupos={}, extraCols=[]
         <thead>
           <tr>
             {visibleFixedCols.map((h,i) => {
-              const left = fixedWidths.slice(0,i).reduce((a,b)=>a+b,0)
-              return <th key={h} style={{ ...thBase,position:'sticky',left,zIndex:3,minWidth:fixedWidths[i] }}><SortHeader label={h} kind="col" /></th>
+              return <th key={h} style={{ ...thBase,minWidth:fixedWidths[i] }}><SortHeader label={h} kind="col" /></th>
             })}
             {normalCols.map(h => <th key={h} style={thBase}><SortHeader label={h} kind="col" /></th>)}
             {Object.entries(grupos).map(([lbl])=><th key={lbl} style={{ ...thBase,minWidth:150 }}><SortHeader label={lbl} kind="group" /></th>)}
@@ -220,8 +219,7 @@ export function DataTable({ rows, headers, fixedCols=[], grupos={}, extraCols=[]
           {sortedRows.map((row,i)=>(
             <tr key={i}>
               {visibleFixedCols.map((h,fi)=>{
-                const left = fixedWidths.slice(0,fi).reduce((a,b)=>a+b,0)
-                return <td key={h} style={{ ...tdBase,position:'sticky',left,zIndex:1,background:'var(--bg2)',minWidth:fixedWidths[fi] }}>
+                return <td key={h} style={{ ...tdBase,minWidth:fixedWidths[fi] }}>
                   <Cell col={h} value={row[h]||''} />
                 </td>
               })}
