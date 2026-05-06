@@ -1,0 +1,30 @@
+
+> score5-app@1.0.0 dev
+> next dev -p 3000
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 2.6s
+ ○ Compiling / ...
+ ✓ Compiled / in 3.3s (517 modules)
+ GET / 200 in 3456ms
+ GET /_next/static/webpack/6851e432098d4ba0.webpack.hot-update.json 404 in 3501ms
+ GET / 200 in 52ms
+ ✓ Compiled /api/sheets in 165ms (282 modules)
+ GET /api/sheets 200 in 1334ms
+ GET /api/sheets?refresh=1 200 in 1071ms
+ GET / 200 in 74ms
+ GET /api/sheets 200 in 139ms
+ GET /?t=1778098401859 200 in 45ms
+ GET /api/sheets 200 in 17ms
+ ✓ Compiled /dashboard in 326ms (537 modules)
+ GET /api/sheets 200 in 25ms
+ GET / 200 in 76ms
+ GET /api/sheets 200 in 774ms
+ ○ Compiling /resumo ...
+ ✓ Compiled /resumo in 669ms (543 modules)
+ GET /api/sheets 200 in 66ms
+ GET /api/sheets?refresh=1 200 in 851ms

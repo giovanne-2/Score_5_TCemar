@@ -1,0 +1,40 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:        #f8f4ef;
+  --bg2:       #fffaf6;
+  --bg3:       #f1e8df;
+  --border:    rgba(36,28,22,0.09);
+  --border2:   rgba(36,28,22,0.16);
+  --text:      #211a16;
+  --muted:     #7b7068;
+  --blue:      #1f6f8b;
+  --blue-dim:  rgba(31,111,139,0.11);
+  --green:     #10845f;
+  --green-dim: rgba(16,132,95,0.12);
+  --red:       #d6422b;
+  --red-dim:   rgba(214,66,43,0.11);
+  --yellow:    #ff4f1f;
+  --yellow-dim:rgba(255,79,31,0.13);
+  --accent:    #ff4f1f;
+  --accent-dim:rgba(255,79,31,0.13);
+}
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Inter','Segoe UI',system-ui,sans-serif;
+  font-size: 14px; line-height: 1.5;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,79,31,0.38); border-radius: 3px; }
+
+button, select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 640px) {
+  body {
+    font-size: 13px;
+  }
+}
