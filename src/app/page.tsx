@@ -132,7 +132,7 @@ export default function Planejador() {
             </div>
             <span style={{ fontSize:12,color:'var(--muted)' }}>{currentRows.length} registro{currentRows.length!==1?'s':''}</span>
           </div>
-          <Card><DataTable rows={currentRows} headers={currentHeaders} fixedCols={PLANNER_FIXED_COLS} grupos={currentGrupos} extraCols={extraCols} hiddenCols={PLANNER_HIDDEN_COLS}/></Card>
+          <Card><DataTable rows={currentRows} headers={currentHeaders} fixedCols={PLANNER_FIXED_COLS} grupos={currentGrupos} extraCols={extraCols} hiddenCols={PLANNER_HIDDEN_COLS} groupsAfterCol="Mix OK"/></Card>
         </>
       )}
     </div>
