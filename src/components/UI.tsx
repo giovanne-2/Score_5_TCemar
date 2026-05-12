@@ -105,6 +105,7 @@ interface TableProps {
   grupos?: Record<string,string[]>
   extraCols?: { label:string; compute:(row:Row)=>string }[]
   hiddenCols?: string[]
+  groupsAfterCol?: string
 }
 
 const thBase: React.CSSProperties = {
@@ -139,7 +140,7 @@ function compareValues(a: string | number, b: string | number) {
   return String(a).localeCompare(String(b), 'pt-BR', { numeric:true, sensitivity:'base' })
 }
 
-export function DataTable({ rows, headers, fixedCols=[], grupos={}, extraCols=[], hiddenCols=[] }: TableProps) {
+export function DataTable({ rows, headers, fixedCols=[], grupos={}, extraCols=[], hiddenCols=[], groupsAfterCol }: TableProps) {
   const [sort, setSort] = React.useState<SortState>(null)
   const hidden = new Set(hiddenCols)
   const inGroup = new Set(Object.values(grupos).flat())
@@ -147,6 +148,10 @@ export function DataTable({ rows, headers, fixedCols=[], grupos={}, extraCols=[]
   const visibleExtraCols = extraCols.filter(c => !hidden.has(c.label))
   const extraLabels = new Set(visibleExtraCols.map(c => c.label))
   const normalCols = headers.filter(h => !hidden.has(h) && !inGroup.has(h) && !visibleFixedCols.includes(h) && !extraLabels.has(h))
+  const groupEntries = Object.entries(grupos)
+  const groupInsertIndex = groupsAfterCol ? normalCols.indexOf(groupsAfterCol) : -1
+  const normalColsBeforeGroups = groupInsertIndex >= 0 ? normalCols.slice(0, groupInsertIndex + 1) : normalCols
+  const normalColsAfterGroups = groupInsertIndex >= 0 ? normalCols.slice(groupInsertIndex + 1) : []
 
   // Larguras fixas por coluna
   const fixedWidthByCol: Record<string, number> = {
@@ -197,6 +202,18 @@ export function DataTable({ rows, headers, fixedCols=[], grupos={}, extraCols=[]
       </button>
     )
   }
+  const renderNormalHeader = (h: string) => (
+    <th key={h} style={thBase}><SortHeader label={h} kind="col" /></th>
+  )
+  const renderGroupHeader = ([lbl]: [string, string[]]) => (
+    <th key={lbl} style={{ ...thBase,minWidth:150 }}><SortHeader label={lbl} kind="group" /></th>
+  )
+  const renderNormalCell = (row: Row, h: string) => (
+    <td key={h} style={tdBase}><Cell col={h} value={row[h]||''} /></td>
+  )
+  const renderGroupCell = (row: Row, [lbl,cols]: [string, string[]]) => (
+    <td key={lbl} style={{ ...tdBase,minWidth:150 }}><GrupoCell row={row} cols={cols} /></td>
+  )
 
   if (!rows.length) return (
     <div style={{ textAlign:'center',padding:'3rem',color:'var(--muted)',fontSize:13 }}>📭 Nenhum registro com esses filtros.</div>
@@ -210,8 +227,9 @@ export function DataTable({ rows, headers, fixedCols=[], grupos={}, extraCols=[]
             {visibleFixedCols.map((h,i) => {
               return <th key={h} style={{ ...thBase,minWidth:fixedWidths[i] }}><SortHeader label={h} kind="col" /></th>
             })}
-            {normalCols.map(h => <th key={h} style={thBase}><SortHeader label={h} kind="col" /></th>)}
-            {Object.entries(grupos).map(([lbl])=><th key={lbl} style={{ ...thBase,minWidth:150 }}><SortHeader label={lbl} kind="group" /></th>)}
+            {normalColsBeforeGroups.map(renderNormalHeader)}
+            {groupEntries.map(renderGroupHeader)}
+            {normalColsAfterGroups.map(renderNormalHeader)}
             {visibleExtraCols.map(c=><th key={c.label} style={thBase}><SortHeader label={c.label} kind="extra" /></th>)}
           </tr>
         </thead>
@@ -223,10 +241,9 @@ export function DataTable({ rows, headers, fixedCols=[], grupos={}, extraCols=[]
                   <Cell col={h} value={row[h]||''} />
                 </td>
               })}
-              {normalCols.map(h=><td key={h} style={tdBase}><Cell col={h} value={row[h]||''} /></td>)}
-              {Object.entries(grupos).map(([lbl,cols])=>(
-                <td key={lbl} style={{ ...tdBase,minWidth:150 }}><GrupoCell row={row} cols={cols} /></td>
-              ))}
+              {normalColsBeforeGroups.map(h => renderNormalCell(row, h))}
+              {groupEntries.map(entry => renderGroupCell(row, entry))}
+              {normalColsAfterGroups.map(h => renderNormalCell(row, h))}
               {visibleExtraCols.map(c=><td key={c.label} style={tdBase}><Cell col={c.label} value={c.compute(row)} /></td>)}
             </tr>
           ))}
