@@ -220,7 +220,7 @@ export function DataTable({ rows, headers, fixedCols=[], grupos={}, extraCols=[]
   )
 
   return (
-    <div style={{ width:'100%',maxWidth:'100%',overflowX:'auto',overflowY:'hidden',WebkitOverflowScrolling:'touch',touchAction:'pan-x' }}>
+    <div style={{ width:'100%',maxWidth:'100%',overflowX:'auto',WebkitOverflowScrolling:'touch',touchAction:'pan-x pan-y' }}>
       <table style={{ width:'max-content',minWidth:'100%',borderCollapse:'collapse',fontSize:12,whiteSpace:'nowrap' }}>
         <thead>
           <tr>
