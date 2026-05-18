@@ -119,7 +119,7 @@ export function Cell({ col, value }: { col:string; value:string }) {
   return <span title={value}>{value||<span style={{ color:'rgba(122,128,153,.35)' }}>—</span>}</span>
 }
 
-type GroupCellMode = 'missing' | 'purchased'
+type GroupCellMode = 'missing' | 'purchased' | 'both'
 
 function formatGroupSkuLabel(col: string) {
   return col.replace(/ 600$/,'').replace(/ LN$/,'').replace(/^ZERO /,'')
@@ -130,6 +130,7 @@ function GrupoCell({ row, cols, mode = 'missing' }: { row:Row; cols:string[]; mo
   if (!temDado) return <span style={{ color:'rgba(122,128,153,.35)' }}>—</span>
 
   const comprados = cols.filter(c => isOk(row[c] || ''))
+  const faltam = cols.filter(c => !isOk(row[c] || '') && (row[c] ?? '') !== '')
   if (comprados.length === cols.length) {
     return <span style={{ display:'inline-flex',fontSize:11,fontWeight:600,padding:'2px 8px',borderRadius:10,background:'var(--green-dim)',color:'var(--green)' }}>✔ Todos</span>
   }
@@ -147,7 +148,23 @@ function GrupoCell({ row, cols, mode = 'missing' }: { row:Row; cols:string[]; mo
     )
   }
 
-  const faltam = cols.filter(c => !isOk(row[c] || '') && (row[c] ?? '') !== '')
+  if (mode === 'both') {
+    return (
+      <div style={{ display:'flex',flexWrap:'wrap',gap:3 }}>
+        {comprados.map(col => (
+          <span key={`ok-${col}`} style={{ display:'inline-flex',fontSize:10,fontWeight:600,padding:'1px 6px',borderRadius:8,background:'var(--green-dim)',color:'var(--green)',whiteSpace:'nowrap' }}>
+            {formatGroupSkuLabel(col)}
+          </span>
+        ))}
+        {faltam.map(col => (
+          <span key={`nok-${col}`} style={{ display:'inline-flex',fontSize:10,fontWeight:600,padding:'1px 6px',borderRadius:8,background:'var(--red-dim)',color:'var(--red)',whiteSpace:'nowrap' }}>
+            {formatGroupSkuLabel(col)}
+          </span>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div style={{ display:'flex',flexWrap:'wrap',gap:3 }}>
       {faltam.map(col => (
