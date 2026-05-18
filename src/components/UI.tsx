@@ -4,31 +4,47 @@ import { DIAS, isOk, cuponsOk } from './useSheets'
 import type { Row } from '@/lib/sheets'
 import { fmtMoney, fmtNum } from '@/lib/sheets'
 
-// ── Pills de dia ──────────────────────────────────────────────────
 export function DayPills({ value, onChange }: { value:number|null; onChange:(d:number|null)=>void }) {
   return (
     <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
       {[{ label:'Todos', idx:null as number|null }, ...DIAS.map((d,i)=>({ label:d.label+(d.extra?'*':''), idx:i }))].map(({label,idx}) => {
-        const on = value === idx; const sp = idx!==null && !!DIAS[idx]?.extra
+        const on = value === idx
+        const sp = idx!==null && !!DIAS[idx]?.extra
         return (
-          <button key={String(idx)} onClick={()=>onChange(on?null:idx)} style={{
-            padding:'5px 12px',fontSize:12,borderRadius:20,cursor:'pointer',
-            border:`1px solid ${on?(sp?'rgba(62,207,142,.4)':'rgba(74,143,232,.4)'):'var(--border2)'}`,
-            background:on?(sp?'var(--green-dim)':'var(--blue-dim)'):'var(--bg3)',
-            color:on?(sp?'var(--green)':'var(--blue)'):'var(--muted)',
-            transition:'all .12s',whiteSpace:'nowrap',
-          }}>{label}</button>
+          <button
+            key={String(idx)}
+            onClick={()=>onChange(on?null:idx)}
+            style={{
+              padding:'5px 12px',
+              fontSize:12,
+              borderRadius:20,
+              cursor:'pointer',
+              border:`1px solid ${on?(sp?'rgba(62,207,142,.4)':'rgba(74,143,232,.4)'):'var(--border2)'}`,
+              background:on?(sp?'var(--green-dim)':'var(--blue-dim)'):'var(--bg3)',
+              color:on?(sp?'var(--green)':'var(--blue)'):'var(--muted)',
+              transition:'all .12s',
+              whiteSpace:'nowrap',
+            }}
+          >
+            {label}
+          </button>
         )
       })}
     </div>
   )
 }
 
-// ── Filtro OK/NOK reutilizável ────────────────────────────────────
 export function OkFilter({ label, value, onChange }: { label:string; value:string; onChange:(v:string)=>void }) {
   const inputStyle: React.CSSProperties = {
-    height:36,padding:'0 12px',fontSize:13,background:'var(--bg3)',color:'var(--text)',
-    border:'1px solid var(--border2)',borderRadius:7,outline:'none',minWidth:120,
+    height:36,
+    padding:'0 12px',
+    fontSize:13,
+    background:'var(--bg3)',
+    color:'var(--text)',
+    border:'1px solid var(--border2)',
+    borderRadius:7,
+    outline:'none',
+    minWidth:120,
   }
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
@@ -43,61 +59,106 @@ export function OkFilter({ label, value, onChange }: { label:string; value:strin
 }
 
 const inputBase: React.CSSProperties = {
-  height:36,padding:'0 12px',fontSize:13,background:'var(--bg3)',
-  color:'var(--text)',border:'1px solid var(--border2)',borderRadius:7,outline:'none',minWidth:120,
+  height:36,
+  padding:'0 12px',
+  fontSize:13,
+  background:'var(--bg3)',
+  color:'var(--text)',
+  border:'1px solid var(--border2)',
+  borderRadius:7,
+  outline:'none',
+  minWidth:120,
 }
+
 export function FG({ label, children }: { label:string; children:React.ReactNode }) {
-  return <div style={{ display:'flex',flexDirection:'column',gap:6 }}>
-    <label style={{ fontSize:12,color:'var(--muted)' }}>{label}</label>{children}
-  </div>
+  return (
+    <div style={{ display:'flex',flexDirection:'column',gap:6 }}>
+      <label style={{ fontSize:12,color:'var(--muted)' }}>{label}</label>
+      {children}
+    </div>
+  )
 }
+
 export function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return <select style={{ ...inputBase,minWidth:130 }} {...props}>{props.children}</select>
 }
+
 export function BtnGhost(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return <button style={{ height:36,padding:'0 16px',fontSize:13,background:'transparent',color:'var(--muted)',border:'1px solid var(--border2)',borderRadius:7,cursor:'pointer' }} {...props} />
 }
 
-// ── Badge ─────────────────────────────────────────────────────────
 export function MixBadge({ v }: { v:string }) {
   if (isOk(v)) return <span style={{ display:'inline-flex',fontSize:11,fontWeight:600,padding:'2px 8px',borderRadius:10,background:'var(--green-dim)',color:'var(--green)' }}>✔</span>
-  if (v.includes('❌')||v==='0') return <span style={{ display:'inline-flex',fontSize:11,fontWeight:600,padding:'2px 8px',borderRadius:10,background:'var(--red-dim)',color:'var(--red)' }}>✗</span>
+  if (v.includes('❌')||v==='0') return <span style={{ display:'inline-flex',fontSize:11,fontWeight:600,padding:'2px 8px',borderRadius:10,background:'var(--red-dim)',color:'var(--red)' }}>✖</span>
   return <span style={{ color:'rgba(122,128,153,.35)' }}>—</span>
 }
 
-// ── Célula ────────────────────────────────────────────────────────
 export function Cell({ col, value }: { col:string; value:string }) {
   if (['Mix OK','Task TTC','Task Fat.','Visita GV'].includes(col)) return <MixBadge v={value} />
   if (col === 'Cupons') {
     if (!value || value==='0') return <span style={{ color:'rgba(122,128,153,.35)' }}>—</span>
     const ok = cuponsOk(value)
-    return <span style={{ display:'inline-flex',fontSize:11,fontWeight:600,padding:'2px 8px',borderRadius:10,
-      background:ok?'var(--green-dim)':'var(--red-dim)',color:ok?'var(--green)':'var(--red)' }}>{value}</span>
+    return (
+      <span
+        style={{
+          display:'inline-flex',
+          fontSize:11,
+          fontWeight:600,
+          padding:'2px 8px',
+          borderRadius:10,
+          background:ok?'var(--green-dim)':'var(--red-dim)',
+          color:ok?'var(--green)':'var(--red)',
+        }}
+      >
+        {value}
+      </span>
+    )
   }
   if (col === 'GAP Fat.') return <span style={{ color:'var(--text)',fontVariantNumeric:'tabular-nums' }}>{fmtMoney(value)}</span>
   if (col === 'GAP INTEIRA') return <span style={{ color:'var(--text)',fontVariantNumeric:'tabular-nums' }}>{fmtNum(value)}</span>
   return <span title={value}>{value||<span style={{ color:'rgba(122,128,153,.35)' }}>—</span>}</span>
 }
 
-// ── Coluna unificada ─────────────────────────────────────────────
-function GrupoCell({ row, cols }: { row:Row; cols:string[] }) {
-  const temDado = cols.some(c => (row[c]??'') !== '')
+type GroupCellMode = 'missing' | 'purchased'
+
+function formatGroupSkuLabel(col: string) {
+  return col.replace(/ 600$/,'').replace(/ LN$/,'').replace(/^ZERO /,'')
+}
+
+function GrupoCell({ row, cols, mode = 'missing' }: { row:Row; cols:string[]; mode?:GroupCellMode }) {
+  const temDado = cols.some(c => (row[c] ?? '') !== '')
   if (!temDado) return <span style={{ color:'rgba(122,128,153,.35)' }}>—</span>
-  const faltam = cols.filter(c => !isOk(row[c]||'') && (row[c]??'') !== '')
-  if (faltam.length === 0)
+
+  const comprados = cols.filter(c => isOk(row[c] || ''))
+  if (comprados.length === cols.length) {
     return <span style={{ display:'inline-flex',fontSize:11,fontWeight:600,padding:'2px 8px',borderRadius:10,background:'var(--green-dim)',color:'var(--green)' }}>✔ Todos</span>
+  }
+
+  if (mode === 'purchased') {
+    if (comprados.length === 0) return <span style={{ color:'rgba(122,128,153,.35)' }}>—</span>
+    return (
+      <div style={{ display:'flex',flexWrap:'wrap',gap:3 }}>
+        {comprados.map(col => (
+          <span key={col} style={{ display:'inline-flex',fontSize:10,fontWeight:600,padding:'1px 6px',borderRadius:8,background:'var(--green-dim)',color:'var(--green)',whiteSpace:'nowrap' }}>
+            {formatGroupSkuLabel(col)}
+          </span>
+        ))}
+      </div>
+    )
+  }
+
+  const faltam = cols.filter(c => !isOk(row[c] || '') && (row[c] ?? '') !== '')
   return (
     <div style={{ display:'flex',flexWrap:'wrap',gap:3 }}>
-      {faltam.map(c=>(
-        <span key={c} style={{ display:'inline-flex',fontSize:10,fontWeight:600,padding:'1px 6px',borderRadius:8,background:'var(--red-dim)',color:'var(--red)',whiteSpace:'nowrap' }}>
-          {c.replace(/ 600$/,'').replace(/ LN$/,'').replace(/^ZERO /,'')}
+      {faltam.map(col => (
+        <span key={col} style={{ display:'inline-flex',fontSize:10,fontWeight:600,padding:'1px 6px',borderRadius:8,background:'var(--red-dim)',color:'var(--red)',whiteSpace:'nowrap' }}>
+          {formatGroupSkuLabel(col)}
         </span>
       ))}
     </div>
   )
 }
 
-// ── Tabela com colunas fixas + grupos ────────────────────────────
 interface TableProps {
   rows: Row[]
   headers: string[]
@@ -106,16 +167,30 @@ interface TableProps {
   extraCols?: { label:string; compute:(row:Row)=>string }[]
   hiddenCols?: string[]
   groupsAfterCol?: string
+  groupCellMode?: GroupCellMode
 }
 
 const thBase: React.CSSProperties = {
-  padding:'8px 10px',textAlign:'left',fontWeight:600,fontSize:11,
-  color:'var(--muted)',textTransform:'uppercase',letterSpacing:.4,
-  borderBottom:'1px solid var(--border)',background:'var(--bg3)',whiteSpace:'nowrap',
+  padding:'8px 10px',
+  textAlign:'left',
+  fontWeight:600,
+  fontSize:11,
+  color:'var(--muted)',
+  textTransform:'uppercase',
+  letterSpacing:.4,
+  borderBottom:'1px solid var(--border)',
+  background:'var(--bg3)',
+  whiteSpace:'nowrap',
 }
+
 const tdBase: React.CSSProperties = {
-  padding:'7px 10px',color:'var(--text)',whiteSpace:'nowrap',
-  borderBottom:'1px solid var(--border)',maxWidth:180,overflow:'hidden',textOverflow:'ellipsis',
+  padding:'7px 10px',
+  color:'var(--text)',
+  whiteSpace:'nowrap',
+  borderBottom:'1px solid var(--border)',
+  maxWidth:180,
+  overflow:'hidden',
+  textOverflow:'ellipsis',
 }
 
 type SortState = { key:string; dir:'asc'|'desc'; kind:'col'|'group'|'extra' } | null
@@ -140,7 +215,7 @@ function compareValues(a: string | number, b: string | number) {
   return String(a).localeCompare(String(b), 'pt-BR', { numeric:true, sensitivity:'base' })
 }
 
-export function DataTable({ rows, headers, fixedCols=[], grupos={}, extraCols=[], hiddenCols=[], groupsAfterCol }: TableProps) {
+export function DataTable({ rows, headers, fixedCols=[], grupos={}, extraCols=[], hiddenCols=[], groupsAfterCol, groupCellMode='missing' }: TableProps) {
   const [sort, setSort] = React.useState<SortState>(null)
   const hidden = new Set(hiddenCols)
   const inGroup = new Set(Object.values(grupos).flat())
@@ -153,15 +228,16 @@ export function DataTable({ rows, headers, fixedCols=[], grupos={}, extraCols=[]
   const normalColsBeforeGroups = groupInsertIndex >= 0 ? normalCols.slice(0, groupInsertIndex + 1) : normalCols
   const normalColsAfterGroups = groupInsertIndex >= 0 ? normalCols.slice(groupInsertIndex + 1) : []
 
-  // Larguras fixas por coluna
   const fixedWidthByCol: Record<string, number> = {
-    'OPERAÇÃO': 130,
+    'OPERAÃ‡ÃƒO': 130,
     'PDV': 82,
     'Setor': 70,
     'Freq. Visita': 100,
     'Nome': 190,
   }
+
   const fixedWidths = visibleFixedCols.map(h => fixedWidthByCol[h] ?? 120)
+
   const getSortValue = (row: Row, active: NonNullable<SortState>) => {
     if (active.kind === 'extra') {
       const extra = visibleExtraCols.find(c => c.label === active.key)
@@ -174,6 +250,7 @@ export function DataTable({ rows, headers, fixedCols=[], grupos={}, extraCols=[]
     }
     return sortValue(row[active.key] || '')
   }
+
   const sortedRows = React.useMemo(() => {
     if (!sort) return rows
     return [...rows].sort((a,b) => {
@@ -181,6 +258,7 @@ export function DataTable({ rows, headers, fixedCols=[], grupos={}, extraCols=[]
       return sort.dir === 'asc' ? result : -result
     })
   }, [rows, sort, grupos, visibleExtraCols])
+
   const nextSort = (key:string, kind:NonNullable<SortState>['kind']) => {
     setSort(current => {
       if (!current || current.key !== key || current.kind !== kind) return { key, kind, dir:'asc' }
@@ -188,6 +266,7 @@ export function DataTable({ rows, headers, fixedCols=[], grupos={}, extraCols=[]
       return null
     })
   }
+
   const SortHeader = ({ label, kind, style }: { label:string; kind:NonNullable<SortState>['kind']; style?:React.CSSProperties }) => {
     const active = sort?.key === label && sort.kind === kind
     return (
@@ -202,49 +281,51 @@ export function DataTable({ rows, headers, fixedCols=[], grupos={}, extraCols=[]
       </button>
     )
   }
+
   const renderNormalHeader = (h: string) => (
     <th key={h} style={thBase}><SortHeader label={h} kind="col" /></th>
   )
+
   const renderGroupHeader = ([lbl]: [string, string[]]) => (
     <th key={lbl} style={{ ...thBase,minWidth:150 }}><SortHeader label={lbl} kind="group" /></th>
   )
+
   const renderNormalCell = (row: Row, h: string) => (
     <td key={h} style={tdBase}><Cell col={h} value={row[h]||''} /></td>
   )
+
   const renderGroupCell = (row: Row, [lbl,cols]: [string, string[]]) => (
-    <td key={lbl} style={{ ...tdBase,minWidth:150 }}><GrupoCell row={row} cols={cols} /></td>
+    <td key={lbl} style={{ ...tdBase,minWidth:150 }}><GrupoCell row={row} cols={cols} mode={groupCellMode} /></td>
   )
 
-  if (!rows.length) return (
-    <div style={{ textAlign:'center',padding:'3rem',color:'var(--muted)',fontSize:13 }}>📭 Nenhum registro com esses filtros.</div>
-  )
+  if (!rows.length) {
+    return <div style={{ textAlign:'center',padding:'3rem',color:'var(--muted)',fontSize:13 }}>📭 Nenhum registro com esses filtros.</div>
+  }
 
   return (
     <div style={{ width:'100%',maxWidth:'100%',overflowX:'auto',WebkitOverflowScrolling:'touch',touchAction:'pan-x pan-y' }}>
       <table style={{ width:'max-content',minWidth:'100%',borderCollapse:'collapse',fontSize:12,whiteSpace:'nowrap' }}>
         <thead>
           <tr>
-            {visibleFixedCols.map((h,i) => {
-              return <th key={h} style={{ ...thBase,minWidth:fixedWidths[i] }}><SortHeader label={h} kind="col" /></th>
-            })}
+            {visibleFixedCols.map((h,i) => <th key={h} style={{ ...thBase,minWidth:fixedWidths[i] }}><SortHeader label={h} kind="col" /></th>)}
             {normalColsBeforeGroups.map(renderNormalHeader)}
             {groupEntries.map(renderGroupHeader)}
             {normalColsAfterGroups.map(renderNormalHeader)}
-            {visibleExtraCols.map(c=><th key={c.label} style={thBase}><SortHeader label={c.label} kind="extra" /></th>)}
+            {visibleExtraCols.map(c => <th key={c.label} style={thBase}><SortHeader label={c.label} kind="extra" /></th>)}
           </tr>
         </thead>
         <tbody>
           {sortedRows.map((row,i)=>(
             <tr key={i}>
-              {visibleFixedCols.map((h,fi)=>{
-                return <td key={h} style={{ ...tdBase,minWidth:fixedWidths[fi] }}>
+              {visibleFixedCols.map((h,fi) => (
+                <td key={h} style={{ ...tdBase,minWidth:fixedWidths[fi] }}>
                   <Cell col={h} value={row[h]||''} />
                 </td>
-              })}
+              ))}
               {normalColsBeforeGroups.map(h => renderNormalCell(row, h))}
               {groupEntries.map(entry => renderGroupCell(row, entry))}
               {normalColsAfterGroups.map(h => renderNormalCell(row, h))}
-              {visibleExtraCols.map(c=><td key={c.label} style={tdBase}><Cell col={c.label} value={c.compute(row)} /></td>)}
+              {visibleExtraCols.map(c => <td key={c.label} style={tdBase}><Cell col={c.label} value={c.compute(row)} /></td>)}
             </tr>
           ))}
         </tbody>
@@ -256,6 +337,7 @@ export function DataTable({ rows, headers, fixedCols=[], grupos={}, extraCols=[]
 export function Card({ children, style }: { children:React.ReactNode; style?:React.CSSProperties }) {
   return <div style={{ background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:12,...style }}>{children}</div>
 }
+
 export function StatCard({ label,value,sub,color }: { label:string;value:string|number;sub?:string;color?:string }) {
   return (
     <div style={{ background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:10,padding:'14px 16px' }}>
@@ -265,11 +347,13 @@ export function StatCard({ label,value,sub,color }: { label:string;value:string|
     </div>
   )
 }
+
 export function Loader({ text='Carregando...' }: { text?:string }) {
   return (
     <div style={{ display:'flex',alignItems:'center',justifyContent:'center',gap:10,padding:'3rem',color:'var(--muted)',fontSize:13 }}>
       <div style={{ width:18,height:18,borderRadius:'50%',border:'2px solid var(--border2)',borderTopColor:'var(--blue)',animation:'spin .7s linear infinite' }}/>
-      {text}<style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      {text}
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   )
 }
